@@ -4,6 +4,7 @@ function init(chosenCurrency, decimalAmnt)
     var orderbook = document.getElementById("orderbook");
     if(!orderbook)
         return;
+    removeAdBar();
     decimals = decimalAmnt;
     FromCurrency = getChartCurrency();
     ToCurrency = chosenCurrency;
@@ -19,43 +20,29 @@ function init(chosenCurrency, decimalAmnt)
       attributes: true,
       childList: true
     });
-    removeAdBar();
 }
 
+function handleTable(tableDom)
+{
+    var childs = tableDom.querySelectorAll("div");
+    for(var i=0; i<childs.length; i++){
+        var price = childs[i].getElementsByClassName("price")[0];
+        if( !~price.innerHTML.indexOf(ToCurrency) &&
+            ~price.innerHTML.indexOf("<g>"))
+        {
+            price.innerHTML = parseOrderBookPrices(price);
+            price.innerHTML = price.innerHTML + ToCurrency;
+        }
+    }
+}
 function observerFunction(mutations, observer) {
     mutations.forEach(function(mutation){
         if(mutation.target.className == "table"){
-            var childs = mutation.target.querySelectorAll("div");
-            for(var i=0; i<childs.length; i++){
-                var price = childs[i].getElementsByClassName("price")[0];
-                if( !~price.innerHTML.indexOf(ToCurrency) &&
-                    ~price.innerHTML.indexOf("<g>"))
-                {
-                    price.innerHTML = parseOrderBookPrices(price);
-                    price.innerHTML = price.innerHTML + ToCurrency;
-                }
-            }
-        }
-        else if(mutation.target.id=="price" &&
-                mutation.target.innerHTML.indexOf(ToCurrency))
-        {
-            /*
-            mutation.target.innerHTML = parseMainPrice(mutation.target);
-            mutation.target.innerHTML = mutation.target.innerHTML + ToCurrency;
-            Do not convert because alarmZ on bitcoinwisdom uses this value,
-            and i think i like it this way better anywayz, so u can see a value
-            in charts original currency
-            */
+            handleTable(mutation.target);
         }
     });
 }
 
-function parseMainPrice(priceDiv)
-{
-    price = priceDiv.innerHTML;
-    price = fx.convert(parseFloat(price), {from: FromCurrency, to: ToCurrency});
-    return price.toFixed(decimals);
-}
 function parseOrderBookPrices(priceDiv)
 {
     price = priceDiv.innerHTML;
