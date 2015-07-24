@@ -1,10 +1,10 @@
-var FromCurrency, ToCurrency, MutationObserver;
-var decimals = 2;
-function init(chosenCurrency)
+var FromCurrency, ToCurrency, MutationObserver, decimals;
+function init(chosenCurrency, decimalAmnt)
 {
     var orderbook = document.getElementById("orderbook");
     if(!orderbook)
         return;
+    decimals = decimalAmnt;
     FromCurrency = getChartCurrency();
     ToCurrency = chosenCurrency;
     if(FromCurrency == ToCurrency)
@@ -19,7 +19,6 @@ function init(chosenCurrency)
       attributes: true,
       childList: true
     });
-
     removeAdBar();
 }
 
@@ -43,7 +42,9 @@ function observerFunction(mutations, observer) {
             /*
             mutation.target.innerHTML = parseMainPrice(mutation.target);
             mutation.target.innerHTML = mutation.target.innerHTML + ToCurrency;
-            Do not convert because of alarmZ wont work then
+            Do not convert because alarmZ on bitcoinwisdom uses this value,
+            and i think i like it this way better anywayz, so u can see a value
+            in charts original currency
             */
         }
     });
@@ -72,9 +73,18 @@ function parseOrderBookPrices(priceDiv)
     return price.toFixed(decimals);
 }
 
-function main(chosenCurrency){
-    getRates(function(){
-        init(chosenCurrency);
+function main(){
+    chrome.storage.sync.get({
+        "currency": "EUR",  //defaultvalue
+        "decimals": "2"
+    }, function(items) {
+        getRates(function(data){
+            fx.base = data.base;
+            fx.rates = data.rates;
+            init(items.currency, items.decimals);
+        });
     });
 }
-main("EUR");
+
+//begin app
+main();

@@ -4,10 +4,12 @@
 	"short_name": "BWC",
 	"description": "shows other currencies on bitcoinwisdom.com",
 	"version": "0.1",
+	"options_page": "options/options.html",
+	"permissions": ["storage"],
 	"content_scripts": [
     {
 	  "matches": ["*://bitcoinwisdom.com/*"],
-      "js": ["libs/money.js", "utils.js", "getCurrencyData.js", "main.js"]
+      "js": ["libs/money.js", "js/utils.js", "js/getCurrencyData.js", "js/main.js"]
     }
   ]
 }
