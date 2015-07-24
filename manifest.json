@@ -1,0 +1,13 @@
+{
+	"manifest_version": 2,
+	"name": "BitcoinWisdomCurrency",
+	"short_name": "BWC",
+	"description": "shows other currencies on bitcoinwisdom.com",
+	"version": "0.1",
+	"content_scripts": [
+    {
+	  "matches": ["*://bitcoinwisdom.com/*"],
+      "js": ["libs/money.js", "utils.js", "getCurrencyData.js", "main.js"]
+    }
+  ]
+}
